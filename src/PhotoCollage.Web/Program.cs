@@ -1,6 +1,7 @@
 ﻿using PhotoCollage.Web.Components;
 
 namespace PhotoCollage.Web;
+
 public class Program
 {
     public static void Main(string[] args)
