@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Core", "PhotoCollage.Core\PhotoCollage.Core.csproj", "{288C2C84-7B29-4E80-A7F8-70CB739F4D95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Persistence", "PhotoCollage.Persistence\PhotoCollage.Persistence.csproj", "{D545429B-2A5F-4736-B1A7-A18CF0193069}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,14 @@ Global
 		{06231C46-B22C-4615-90E0-117B70757538}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06231C46-B22C-4615-90E0-117B70757538}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06231C46-B22C-4615-90E0-117B70757538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
