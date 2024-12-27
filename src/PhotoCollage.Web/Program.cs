@@ -1,5 +1,4 @@
-using PhotoCollage.Web.Client.Pages;
-using PhotoCollage.Web.Components;
+﻿using PhotoCollage.Web.Components;
 
 namespace PhotoCollage.Web;
 public class Program
