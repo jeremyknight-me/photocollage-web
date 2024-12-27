@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Web.Client", "PhotoCollage.Web.Client\PhotoCollage.Web.Client.csproj", "{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Web", "PhotoCollage.Web\PhotoCollage.Web.csproj", "{06231C46-B22C-4615-90E0-117B70757538}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
