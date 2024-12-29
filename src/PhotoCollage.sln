@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Core", "PhotoC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Persistence", "PhotoCollage.Persistence\PhotoCollage.Persistence.csproj", "{D545429B-2A5F-4736-B1A7-A18CF0193069}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
