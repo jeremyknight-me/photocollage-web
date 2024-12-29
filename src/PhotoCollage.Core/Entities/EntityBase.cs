@@ -3,6 +3,7 @@
 public abstract class EntityBase<TId> : EntityBase
     where TId : struct, IEquatable<TId>
 {
+    public TId Id { get; private set; }
 }
 
 public abstract class EntityBase

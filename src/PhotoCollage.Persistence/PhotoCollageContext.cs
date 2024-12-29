@@ -1,4 +1,7 @@
-﻿using PhotoCollage.Persistence.Interceptors;
+﻿using PhotoCollage.Core.ValueObjects;
+using PhotoCollage.Persistence.Configuration;
+using PhotoCollage.Persistence.Converters;
+using PhotoCollage.Persistence.Interceptors;
 
 namespace PhotoCollage.Persistence;
 
@@ -14,6 +17,10 @@ public sealed class PhotoCollageContext : DbContext
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<string>().AreUnicode(unicode: true);
+
+        configurationBuilder.Properties<ExcludedFolderId>().HaveConversion<ExcludedFolderIdValueConverter>();
+        configurationBuilder.Properties<LibraryId>().HaveConversion<LibraryIdValueConverter>();
+        configurationBuilder.Properties<PhotoId>().HaveConversion<PhotoIdValueConverter>();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -25,5 +32,6 @@ public sealed class PhotoCollageContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryConfiguration).Assembly);
     }
 }
