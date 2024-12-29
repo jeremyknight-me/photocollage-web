@@ -8,10 +8,11 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        var configuration = builder.Configuration;
         var services = builder.Services;
 
-        builder.SetupOpenTelemetry();
+        builder
+            .SetupOpenTelemetry()
+            .SetupPersistence();
 
         services.AddRazorComponents()
             .AddInteractiveServerComponents()
@@ -35,7 +36,6 @@ public class Program
 
         app.UseAntiforgery();
 
-
         app.MapHealthChecks("/healthz");
 
         app.MapStaticAssets();
@@ -44,6 +44,7 @@ public class Program
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
+        app.ApplyMigrations();
         app.Run();   
     }
 }

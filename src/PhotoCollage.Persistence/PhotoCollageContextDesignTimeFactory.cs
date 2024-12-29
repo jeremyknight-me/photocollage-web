@@ -16,10 +16,11 @@ public sealed class PhotoCollageContextDesignTimeFactory : IDesignTimeDbContextF
 
     public PhotoCollageContext CreateDbContext(string[] args)
     {
+        var migrationAssembly = typeof(PhotoCollageContext).Assembly.GetName().Name;
         DbContextOptionsBuilder<PhotoCollageContext> builder = new();
         _ = builder.UseNpgsql(
             connectionString: this.configuration.GetConnectionString("DesignTime"),
-            options => options.MigrationsAssembly(ServiceCollectionExtensions.MigrationAssembly));
+            options => options.MigrationsAssembly(migrationAssembly));
         return new PhotoCollageContext(builder.Options);
     }
 }
