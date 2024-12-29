@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Web.Client", "PhotoCollage.Web.Client\PhotoCollage.Web.Client.csproj", "{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Web", "PhotoCollage.Web\PhotoCollage.Web.csproj", "{06231C46-B22C-4615-90E0-117B70757538}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4B2B0408-8007-4335-8ADB-9F92DF3CFAA7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Core", "PhotoCollage.Core\PhotoCollage.Core.csproj", "{288C2C84-7B29-4E80-A7F8-70CB739F4D95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoCollage.Persistence", "PhotoCollage.Persistence\PhotoCollage.Persistence.csproj", "{D545429B-2A5F-4736-B1A7-A18CF0193069}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C7FC352-1989-4EB9-AA8E-2B41A722B7C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06231C46-B22C-4615-90E0-117B70757538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288C2C84-7B29-4E80-A7F8-70CB739F4D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D545429B-2A5F-4736-B1A7-A18CF0193069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAFD1162-AE11-4A2E-AD7E-A827BB4475EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

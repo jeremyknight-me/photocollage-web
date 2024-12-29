@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <Authors>Jeremy Knight</Authors>
+    <Company>Jeremy Knight</Company>
+    <Copyright>Copyright Jeremy Knight. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/jeremyknight-me/photocollage-web</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jeremyknight-me/photocollage-web</RepositoryUrl>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>
