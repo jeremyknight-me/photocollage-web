@@ -1,8 +1,8 @@
 ﻿window.collage = {
-    addPhoto: function (photoResponse, index, settings) {
+    addPhoto: function (id, url, index, settings) {
         let wrapper = document.getElementById('collage-wrapper');
         let frame = document.createElement('div');
-        frame.id = `photo-${photoResponse.id}`;
+        frame.id = `photo-${id}`;
         frame.classList.add('photo-frame');
         if (settings.hasBorder) {
             frame.classList.add('bordered');
@@ -20,7 +20,7 @@
         frame.style.transform = `rotate(${rotation}deg)`;
 
         let photo = document.createElement('img');
-        photo.src = photoResponse.source;
+        photo.src = url;
         photo.style.maxHeight = `${settings.maximumSize}px`;
         photo.style.maxWidth = `${settings.maximumSize}px`;
         if (settings.isGrayscale) {

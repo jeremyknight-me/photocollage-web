@@ -56,6 +56,7 @@ public class Program
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
         app.MapHealthChecks("/healthz");
+        app.MapCustomEndpoints();
         app.UseCollage();
         app.ApplyMigrations();
 

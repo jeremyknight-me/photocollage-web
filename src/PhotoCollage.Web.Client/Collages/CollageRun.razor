@@ -37,7 +37,7 @@
 
     protected override void OnInitialized()
     {
-        var uri = NavigationManager.ToAbsoluteUri(CollageLiterals.HubRelativeUrl);
+        var uri = this.NavigationManager.ToAbsoluteUri(CollageLiterals.HubRelativeUrl);
         this.hubConnection = new HubConnectionBuilder()
             .WithUrl(uri)
             // .ConfigureLogging(logging =>
@@ -71,19 +71,16 @@
     private void OnReceiveConnected(CollageSettings collageSettings)
     {
         this.settings = collageSettings;
-        //this.StateHasChanged();
     }
 
     private async Task OnReceivePhoto(Guid photoId)
     {
-        var photoResponse = new CollagePhotoResponse(photoId, "");
-        await this.JS.AddPhoto(photoResponse, this.index++, this.settings);
-        //this.StateHasChanged();
+        var photoUri = this.NavigationManager.ToAbsoluteUri($"/api/photos/{photoId}");
+        await this.JS.AddPhoto(photoId, photoUri.AbsoluteUri, this.index++, this.settings);
     }
 
     private async Task OnReceiveRemove(Guid id)
     {
         await this.JS.RemovePhoto(id);
-        //this.StateHasChanged();
     }
 }
