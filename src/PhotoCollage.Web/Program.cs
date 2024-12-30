@@ -1,4 +1,5 @@
-﻿using PhotoCollage.Web.Components;
+﻿using Microsoft.AspNetCore.ResponseCompression;
+using PhotoCollage.Web.Components;
 using PhotoCollage.Web.Startup;
 
 namespace PhotoCollage.Web;
@@ -10,15 +11,27 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
 
-        builder
-            .SetupOpenTelemetry()
-            .SetupPersistence();
-
         services.AddRazorComponents()
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        services.AddSignalR(options =>
+        {
+            options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+        });
+
+        builder.Services.AddResponseCompression(opts =>
+        {
+            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                ["application/octet-stream"]);
+        });
+
         services.AddHealthChecks();
+
+        builder
+            .SetupOpenTelemetry()
+            .SetupPersistence()
+            .SetupCollage();
 
         var app = builder.Build();
 
@@ -32,11 +45,9 @@ public class Program
             app.UseHsts();
         }
 
+        app.UseResponseCompression();
         app.UseHttpsRedirection();
-
         app.UseAntiforgery();
-
-        app.MapHealthChecks("/healthz");
 
         app.MapStaticAssets();
         app.MapRazorComponents<App>()
@@ -44,7 +55,11 @@ public class Program
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
+        app.MapHealthChecks("/healthz");
+        app.MapCustomEndpoints();
+        app.UseCollage();
         app.ApplyMigrations();
+
         app.Run();   
     }
 }

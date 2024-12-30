@@ -1,0 +1,36 @@
+﻿#collage-wrapper {
+    height: 100vh;
+    position: absolute;
+    overflow: hidden;
+    width: 100vw;
+    z-index: 0;
+}
+
+    #collage-wrapper ::deep .photo-frame {
+        position: absolute;
+    }
+
+        #collage-wrapper ::deep .photo-frame.bordered {
+            background-color: #eee;
+            filter: drop-shadow(0 0 0.75rem #333);
+            padding: 0.6em;
+        }
+
+        #collage-wrapper ::deep .photo-frame.removed {
+            animation: removedFadeOut ease 2s;
+            animation-fill-mode: forwards;
+        }
+
+        #collage-wrapper ::deep .photo-frame img {
+            border: 1px solid #ccc;
+        }
+
+@keyframes removedFadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}

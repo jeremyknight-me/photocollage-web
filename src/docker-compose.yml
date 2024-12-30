@@ -24,6 +24,8 @@ services:
       - "5432:5432"
     expose:
       - "5432"
+    volumes:
+      - db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=photocollage
       - POSTGRES_USER=postgres
@@ -48,3 +50,6 @@ services:
     restart: unless-stopped
     ports:
       - 18888:18888
+
+volumes:
+  db:    

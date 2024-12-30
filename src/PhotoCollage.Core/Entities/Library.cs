@@ -9,23 +9,6 @@ public sealed class Library : EntityBase<LibraryId>
 
     public required string Name { get; set; }
 
-    public IReadOnlyList<ExcludedFolder> ExcludedFolders
-    {
-        get => this.excludedFolders.AsReadOnly();
-        init
-        {
-            this.excludedFolders.Clear();
-            this.excludedFolders.AddRange(value);
-        }
-    }
-
-    public IReadOnlyList<Photo> Photos
-    {
-        get => this.photos.AsReadOnly();
-        init
-        {
-            this.photos.Clear();
-            this.photos.AddRange(value);
-        }
-    }
+    public IReadOnlyCollection<ExcludedFolder> ExcludedFolders => this.excludedFolders.ToList();
+    public IReadOnlyCollection<Photo> Photos => this.photos.ToList();
 }
