@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace PhotoCollage.Persistence;
@@ -20,7 +21,9 @@ public sealed class PhotoCollageContextDesignTimeFactory : IDesignTimeDbContextF
         DbContextOptionsBuilder<PhotoCollageContext> builder = new();
         _ = builder.UseNpgsql(
             connectionString: this.configuration.GetConnectionString("DesignTime"),
-            options => options.MigrationsAssembly(migrationAssembly));
+            options => options
+                .MigrationsAssembly(migrationAssembly)
+                .MigrationsHistoryTable(HistoryRepository.DefaultTableName, PhotoCollageContext.Schema));
         return new PhotoCollageContext(builder.Options);
     }
 }
