@@ -1,0 +1,89 @@
+﻿@page "/collage/run"
+@rendermode InteractiveWebAssembly
+@layout EmptyLayout
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<HeadContent>
+    <style>
+        html, body {
+        background-color: #000;
+        color: #fff;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        }
+    </style>
+</HeadContent>
+
+<PageTitle>Collage Running...</PageTitle>
+
+<div id="collage-wrapper">
+    <div id="loading" class="text-center">
+        <div class="spinner-border" role="status" style="margin: 20vh; width: 5rem; height: 5rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    private HubConnection hubConnection;
+    private CollageSettings settings;
+    private int index = 0;
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(CollageLiterals.HubRelativeUrl);
+        this.hubConnection = new HubConnectionBuilder()
+            .WithUrl(uri)
+            // .ConfigureLogging(logging =>
+            // {
+            //     logging.SetMinimumLevel(LogLevel.Trace);
+            // })
+            .WithAutomaticReconnect()
+            .Build();
+
+        this.hubConnection.On<CollageSettings>("ReceiveConnected", collageSettings => this.OnReceiveConnected(collageSettings));
+        this.hubConnection.On<Guid>("ReceivePhoto", async (photoId) => await this.OnReceivePhoto(photoId));
+        this.hubConnection.On<Guid>("ReceiveRemove", async (photoId) => await this.OnReceiveRemove(photoId));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && this.hubConnection is not null)
+        {
+            await this.hubConnection.StartAsync();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (this.hubConnection is not null)
+        {
+            await this.hubConnection.DisposeAsync();
+        }
+    }
+
+    private void OnReceiveConnected(CollageSettings collageSettings)
+    {
+        this.settings = collageSettings;
+        //this.StateHasChanged();
+    }
+
+    private async Task OnReceivePhoto(Guid photoId)
+    {
+        var photoResponse = new CollagePhotoResponse(photoId, "");
+        await this.JS.AddPhoto(photoResponse, this.index++, this.settings);
+        //this.StateHasChanged();
+    }
+
+    private async Task OnReceiveRemove(Guid id)
+    {
+        await this.JS.RemovePhoto(id);
+        //this.StateHasChanged();
+    }
+}

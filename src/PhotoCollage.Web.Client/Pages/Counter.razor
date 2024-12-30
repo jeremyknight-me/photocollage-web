@@ -19,4 +19,18 @@
     {
         currentCount++;
     }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("render");
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 }
