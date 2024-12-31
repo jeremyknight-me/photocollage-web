@@ -5,6 +5,10 @@ namespace PhotoCollage.Core.Entities;
 
 public sealed class Photo : EntityBase<PhotoId>
 {
+    private Photo()
+    {
+    }
+
     public LibraryId LibraryId { get; private set; }
     public Library Library { get; private set; } = null!;
 
