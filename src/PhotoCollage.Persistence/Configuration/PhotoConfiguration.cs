@@ -16,7 +16,7 @@ internal sealed class PhotoConfiguration : IEntityTypeConfiguration<Photo>
         builder.Property(p => p.SizeBytes).IsRequired();
 
         builder
-            .HasIndex([nameof(Photo.Id), nameof(Photo.RelativePath)])
+            .HasIndex([nameof(Photo.LibraryId), nameof(Photo.RelativePath)])
             .IsUnique()
             .HasDatabaseName($"IX_{nameof(Photo)}_RelativePath");
 

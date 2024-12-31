@@ -14,7 +14,7 @@ internal sealed class ExcludedFolderConfiguration : IEntityTypeConfiguration<Exc
         builder.Property(x => x.RelativePath).IsRequired();
 
         builder
-            .HasIndex([nameof(ExcludedFolder.Id), nameof(ExcludedFolder.RelativePath)])
+            .HasIndex([nameof(ExcludedFolder.LibraryId), nameof(ExcludedFolder.RelativePath)])
             .IsUnique()
             .HasDatabaseName($"IX_{nameof(ExcludedFolder)}_RelativePath");
 

@@ -12,5 +12,7 @@ internal sealed class LibraryConfiguration : IEntityTypeConfiguration<Library>
         builder.Property(l => l.Id).ValueGeneratedOnAdd();
 
         builder.Property(l => l.Name).IsRequired().HasMaxLength(100);
+
+        builder.HasIndex(l => l.Name).IsUnique();
     }
 }

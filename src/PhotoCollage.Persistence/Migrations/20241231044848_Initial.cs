@@ -22,6 +22,7 @@ public partial class Initial : Migration
                 Id = table.Column<int>(type: "integer", nullable: false)
                     .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                 Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                LastRefreshed = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                 DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                 DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
             },
@@ -79,29 +80,24 @@ public partial class Initial : Migration
             });
 
         migrationBuilder.CreateIndex(
-            name: "IX_ExcludedFolder_LibraryId",
-            schema: "app",
-            table: "ExcludedFolder",
-            column: "LibraryId");
-
-        migrationBuilder.CreateIndex(
             name: "IX_ExcludedFolder_RelativePath",
             schema: "app",
             table: "ExcludedFolder",
-            columns: new[] { "Id", "RelativePath" },
+            columns: new[] { "LibraryId", "RelativePath" },
             unique: true);
 
         migrationBuilder.CreateIndex(
-            name: "IX_Photo_LibraryId",
+            name: "IX_Library_Name",
             schema: "app",
-            table: "Photo",
-            column: "LibraryId");
+            table: "Library",
+            column: "Name",
+            unique: true);
 
         migrationBuilder.CreateIndex(
             name: "IX_Photo_RelativePath",
             schema: "app",
             table: "Photo",
-            columns: new[] { "Id", "RelativePath" },
+            columns: new[] { "LibraryId", "RelativePath" },
             unique: true);
     }
 
