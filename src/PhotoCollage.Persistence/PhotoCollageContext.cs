@@ -1,4 +1,5 @@
-﻿using PhotoCollage.Core.ValueObjects;
+﻿using PhotoCollage.Core.Entities;
+using PhotoCollage.Core.ValueObjects;
 using PhotoCollage.Persistence.Configuration;
 using PhotoCollage.Persistence.Converters;
 using PhotoCollage.Persistence.Interceptors;
@@ -13,6 +14,8 @@ public sealed class PhotoCollageContext : DbContext
         : base(options)
     {
     }
+
+    public DbSet<Library> Libraries { get; set; }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

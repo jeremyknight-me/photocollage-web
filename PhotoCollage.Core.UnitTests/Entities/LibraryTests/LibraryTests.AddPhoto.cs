@@ -1,4 +1,5 @@
 ﻿using Ardalis.Result;
+using PhotoCollage.Core.ValueObjects;
 
 namespace PhotoCollage.Core.UnitTests.Entities.LibraryTests;
 
@@ -8,27 +9,32 @@ public partial class LibraryTests
     public void AddPhoto_EmptyRelativePath_ReturnsInvalidResult()
     {
         // Act
-        var result = this.library.AddPhoto("", 100);
+        var file = PhotoFile.Create("", "", 100);
+        var result = this.library.AddPhoto(file);
 
         // Assert
         Assert.False(result.IsSuccess);
         var validationError = Assert.Single(result.ValidationErrors);
-        Assert.Equal("relativePath", validationError.Identifier);
+        Assert.Equal(nameof(PhotoFile.RelativePath), validationError.Identifier);
         Assert.Equal("Photo relative path cannot be null or empty.", validationError.ErrorMessage);
     }
 
     [Fact]
-    public void AddPhoto_RelativePathAlreadyExists_ReturnsNoContentResult()
+    public void AddPhoto_RelativePathAlreadyExists_ReturnsInvalidResult()
     {
         // Arrange
-        this.library.AddExcludedFolder("/test/existing");
+        var existingFile = PhotoFile.Create("/test/existing", "", 100);
+        _ = this.library.AddPhoto(existingFile);
 
         // Act
-        var result = this.library.AddPhoto("/test/existing", 100);
+        var file = PhotoFile.Create("/test/existing", "", 100);
+        var result = this.library.AddPhoto(file);
 
         // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(ResultStatus.NoContent, result.Status);
+        Assert.False(result.IsSuccess);
+        var validationError = Assert.Single(result.ValidationErrors);
+        Assert.Equal(nameof(PhotoFile.RelativePath), validationError.Identifier);
+        Assert.Equal("Photo relative path cannot be duplicated.", validationError.ErrorMessage);
     }
 
     [Fact]
@@ -38,7 +44,8 @@ public partial class LibraryTests
         this.library.AddExcludedFolder("/test/existing");
 
         // Act
-        var result = this.library.AddPhoto("/test/existing", 100);
+        var file = PhotoFile.Create("/test/existing", "", 100);
+        var result = this.library.AddPhoto(file);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -49,13 +56,14 @@ public partial class LibraryTests
     public void AddPhoto_AddsPhoto_ReturnsSuccessResult()
     {
         // Act
-        var result = this.library.AddPhoto("/test/new", 100);
+        var file = PhotoFile.Create("/test/new", "", 100);
+        var result = this.library.AddPhoto(file);
 
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(ResultStatus.Ok, result.Status);
         var photo = Assert.Single(this.library.Photos);
-        Assert.Equal("/test/new", photo.RelativePath);
+        Assert.Equal("test/new", photo.RelativePath);
         Assert.Equal(100, photo.SizeBytes);
     }
 }

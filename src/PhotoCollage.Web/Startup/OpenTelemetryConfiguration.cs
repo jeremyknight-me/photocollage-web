@@ -23,7 +23,8 @@ internal static class OpenTelemetryConfiguration
                 tracing
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation();
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddQuartzInstrumentation();
                 tracing.AddOtlpExporter();
             });
 

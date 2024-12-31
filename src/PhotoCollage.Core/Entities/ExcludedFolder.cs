@@ -19,5 +19,8 @@ public sealed class ExcludedFolder : EntityBase<ExcludedFolderId>
     }
 
     public static ExcludedFolder Create(string relativePath)
-        => new() { RelativePath = relativePath };
+        => new()
+        {
+            RelativePath = relativePath.Trim().TrimStart(['\\', '/'])
+        };
 }

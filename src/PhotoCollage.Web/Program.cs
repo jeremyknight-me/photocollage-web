@@ -29,8 +29,10 @@ public class Program
         services.AddHealthChecks();
 
         builder
+            .SetupApplicationSettings()
             .SetupOpenTelemetry()
             .SetupPersistence()
+            .SetupQuartz()
             .SetupCollage();
 
         var app = builder.Build();

@@ -18,7 +18,7 @@ public partial class LibraryTests
     }
 
     [Fact]
-    public void AddExcludedFolder_RelativePathAlreadyExists_ReturnsNoContentResult()
+    public void AddExcludedFolder_RelativePathAlreadyExists_ReturnsInvalidResult()
     {
         // Arrange
         this.library.AddExcludedFolder("/test/existing");
@@ -27,8 +27,10 @@ public partial class LibraryTests
         var result = this.library.AddExcludedFolder("/test/existing");
 
         // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(ResultStatus.NoContent, result.Status);
+        Assert.False(result.IsSuccess);
+        var validationError = Assert.Single(result.ValidationErrors);
+        Assert.Equal("relativePath", validationError.Identifier);
+        Assert.Equal("Folder relative path cannot be duplicated.", validationError.ErrorMessage);
     }
 
     [Fact]
@@ -55,20 +57,6 @@ public partial class LibraryTests
         Assert.True(result.IsSuccess);
         Assert.IsType<Result>(result);
         var excludedFolder = Assert.Single(this.library.ExcludedFolders);
-        Assert.Equal("/test/new", excludedFolder.RelativePath);
-    }
-
-    [Fact]
-    public void AddExcludedFolder_RelativePathNotExists_ExistingRelativePathIsDuplicate_ReturnsNoContentResult()
-    {
-        // Arrange
-        this.library.AddExcludedFolder("/test/existing");
-
-        // Act
-        var result = this.library.AddExcludedFolder("/test/existing");
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        Assert.Equal(ResultStatus.NoContent, result.Status);
+        Assert.Equal("test/new", excludedFolder.RelativePath);
     }
 }
