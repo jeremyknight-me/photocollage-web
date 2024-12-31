@@ -12,7 +12,7 @@ using PhotoCollage.Persistence;
 namespace PhotoCollage.Persistence.Migrations
 {
     [DbContext(typeof(PhotoCollageContext))]
-    [Migration("20241231044848_Initial")]
+    [Migration("20241231071354_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -101,6 +101,12 @@ namespace PhotoCollage.Persistence.Migrations
 
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .IsUnicode(true)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<int>("LibraryId")
                         .HasColumnType("integer");
