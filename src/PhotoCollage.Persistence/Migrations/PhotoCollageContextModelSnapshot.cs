@@ -47,9 +47,7 @@ namespace PhotoCollage.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LibraryId");
-
-                    b.HasIndex("Id", "RelativePath")
+                    b.HasIndex("LibraryId", "RelativePath")
                         .IsUnique()
                         .HasDatabaseName("IX_ExcludedFolder_RelativePath");
 
@@ -70,6 +68,9 @@ namespace PhotoCollage.Persistence.Migrations
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("LastRefreshed")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -77,6 +78,9 @@ namespace PhotoCollage.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Library", "app");
                 });
@@ -95,6 +99,12 @@ namespace PhotoCollage.Persistence.Migrations
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .IsUnicode(true)
+                        .HasColumnType("character varying(4)");
+
                     b.Property<int>("LibraryId")
                         .HasColumnType("integer");
 
@@ -111,9 +121,7 @@ namespace PhotoCollage.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LibraryId");
-
-                    b.HasIndex("Id", "RelativePath")
+                    b.HasIndex("LibraryId", "RelativePath")
                         .IsUnique()
                         .HasDatabaseName("IX_Photo_RelativePath");
 

@@ -4,6 +4,10 @@ namespace PhotoCollage.Core.Entities;
 
 public sealed class ExcludedFolder : EntityBase<ExcludedFolderId>
 {
+    private ExcludedFolder()
+    {
+    }
+
     public LibraryId LibraryId { get; private set; }
     public Library Library { get; private set; } = null!;
 
@@ -13,4 +17,10 @@ public sealed class ExcludedFolder : EntityBase<ExcludedFolderId>
         get => this.relativePath;
         init => this.relativePath = value?.Trim() ?? throw new ArgumentNullException(nameof(value));
     }
+
+    public static ExcludedFolder Create(string relativePath)
+        => new()
+        {
+            RelativePath = relativePath.Trim().TrimStart(['\\', '/'])
+        };
 }
