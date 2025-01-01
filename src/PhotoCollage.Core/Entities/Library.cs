@@ -13,6 +13,7 @@ public sealed class Library : EntityBase<LibraryId>
     }
 
     public required string Name { get; set; }
+    public string? Description { get; set; }
     public DateTimeOffset? LastRefreshed { get; private set; } = null;
 
     public IReadOnlyCollection<ExcludedFolder> ExcludedFolders => this.excludedFolders.ToList();
