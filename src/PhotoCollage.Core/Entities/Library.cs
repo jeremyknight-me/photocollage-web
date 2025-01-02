@@ -19,8 +19,8 @@ public sealed class Library : EntityBase<LibraryId>
     public IReadOnlyCollection<ExcludedFolder> ExcludedFolders => this.excludedFolders.ToList();
     public IReadOnlyCollection<Photo> Photos => this.photos.ToList();
 
-    public static Library Create(string name)
-        => new() { Name = name };
+    public static Library Create(string name, string? description = null)
+        => new() { Name = name, Description = description };
 
     public Result AddExcludedFolder(string relativePath)
     {

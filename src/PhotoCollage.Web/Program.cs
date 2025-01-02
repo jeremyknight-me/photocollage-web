@@ -33,6 +33,7 @@ public class Program
             .SetupOpenTelemetry()
             .SetupPersistence()
             .SetupQuartz()
+            .SetupLibrary()
             .SetupCollage();
 
         var app = builder.Build();
