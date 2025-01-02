@@ -75,7 +75,7 @@
 
     private async Task OnReceivePhoto(Guid photoId)
     {
-        var photoUri = this.NavigationManager.ToAbsoluteUri($"/api/photos/{photoId}");
+        var photoUri = this.NavigationManager.ToAbsoluteUri($"/collage/photos/{photoId}");
         await this.JS.AddPhoto(photoId, photoUri.AbsoluteUri, this.index++, this.settings);
     }
 
