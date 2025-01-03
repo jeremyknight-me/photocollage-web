@@ -6,7 +6,7 @@ internal static class CollageEndpoints
 {
     internal static IEndpointRouteBuilder MapCollageEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/collage/photos/{photoId}", async (Guid photoId) =>
+        builder.MapGet("/collage/photos/{photoId:long}", async (long photoId) =>
         {
             var path = PhotoService.GetAll()
                 .OrderBy(x => Random.Shared.Next())

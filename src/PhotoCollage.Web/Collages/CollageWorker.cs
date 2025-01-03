@@ -7,7 +7,7 @@ internal sealed class CollageWorker : BackgroundService
 {
     private const int numberOfPhotos = 10;
 
-    private readonly ConcurrentQueue<Guid> photoIdQueue = [];
+    private readonly ConcurrentQueue<long> photoIdQueue = [];
 
     private readonly ILogger<CollageWorker> logger;
     private readonly IHubContext<CollageHub, ICollageClient> hubContext;
@@ -34,7 +34,7 @@ internal sealed class CollageWorker : BackgroundService
                     this.logger.LogInformation("Collage worker ran at {time}", DateTimeOffset.Now);
                 }
 
-                await this.SendPhoto(stoppingToken);
+                await this.SendPhoto();
             }
             catch (Exception ex)
             {
@@ -47,7 +47,7 @@ internal sealed class CollageWorker : BackgroundService
         }
     }
 
-    private async Task SendPhoto(CancellationToken cancellationToken)
+    private async Task SendPhoto()
     {
         if (!this.hubConnectionManager.HasClients)
         {
@@ -59,7 +59,12 @@ internal sealed class CollageWorker : BackgroundService
             return;
         }
 
-        var photoId = Guid.NewGuid();
+        long photoId;
+        do
+        {
+            photoId = Random.Shared.Next(int.MaxValue);
+        } while (this.photoIdQueue.Contains(photoId));
+
         this.photoIdQueue.Enqueue(photoId);
 
         if (this.photoIdQueue.Count > numberOfPhotos

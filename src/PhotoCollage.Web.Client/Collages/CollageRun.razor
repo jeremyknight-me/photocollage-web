@@ -48,8 +48,8 @@
             .Build();
 
         this.hubConnection.On<CollageSettings>("ReceiveConnected", collageSettings => this.OnReceiveConnected(collageSettings));
-        this.hubConnection.On<Guid>("ReceivePhoto", async (photoId) => await this.OnReceivePhoto(photoId));
-        this.hubConnection.On<Guid>("ReceiveRemove", async (photoId) => await this.OnReceiveRemove(photoId));
+        this.hubConnection.On<long>("ReceivePhoto", async (photoId) => await this.OnReceivePhoto(photoId));
+        this.hubConnection.On<long>("ReceiveRemove", async (photoId) => await this.OnReceiveRemove(photoId));
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -73,13 +73,13 @@
         this.settings = collageSettings;
     }
 
-    private async Task OnReceivePhoto(Guid photoId)
+    private async Task OnReceivePhoto(long photoId)
     {
         var photoUri = this.NavigationManager.ToAbsoluteUri($"/collage/photos/{photoId}");
         await this.JS.AddPhoto(photoId, photoUri.AbsoluteUri, this.index++, this.settings);
     }
 
-    private async Task OnReceiveRemove(Guid id)
+    private async Task OnReceiveRemove(long id)
     {
         await this.JS.RemovePhoto(id);
     }
