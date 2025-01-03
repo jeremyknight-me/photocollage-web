@@ -21,6 +21,7 @@ internal sealed class GetLibrariesQueryHandler
         var libraries = await context.Libraries
             .Select(l => new LibraryResponse()
             {
+                Id = l.Id,
                 Name = l.Name,
                 Description = l.Description,
                 RefreshedOn = l.LastRefreshed,

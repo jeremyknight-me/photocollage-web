@@ -1,0 +1,77 @@
+﻿@page "/libraries/{libraryId:int}"
+@rendermode InteractiveServer
+@layout EmptyLayout
+
+<PageTitle>@Title</PageTitle>
+
+@* 
+@if (!@RendererInfo.IsInteractive || !isLoaded || this.model is null)
+{
+    <div>
+        <div id="loading" class="text-center">
+            <div class="spinner-border" role="status" style="margin: 20vh; width: 5rem; height: 5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="d-flex">
+    </div>
+} 
+*@
+
+<div class="d-flex flex-column h-100 w-100">
+    <div class="border-bottom p-2 h-auto">Details here</div>
+    <div class="border-bottom p-2 h-auto">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Library</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Data</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="flex-grow-1 overflow-y-auto">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-0">
+            @for (int i = 0; i < 9; i++)
+            {
+                <div class="col p-3">
+                    <div class="border p-2">
+                        <div class="text-center">
+                            <i class="bi bi-folder-fill fs-2"></i>
+                        </div>
+                        <div class="text-center">Name @(i + 1)</div>
+                        <div class="text-center">Toggle</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code
+{
+    private bool isLoaded = false;
+    private LibraryPathViewModel? model;
+
+    [Parameter]
+    public int LibraryId { get; set; }
+
+    protected string Title
+    {
+        get 
+        {
+            var prefix = model is null || string.IsNullOrWhiteSpace(model.Name)
+                ? string.Empty
+                : $"{model.Name} - ";
+            return $"{prefix}Library Management";
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+}

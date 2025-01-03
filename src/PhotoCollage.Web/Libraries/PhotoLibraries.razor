@@ -7,7 +7,6 @@
 
 @inject IQueryHandler<GetLibrariesQuery, IReadOnlyCollection<LibraryResponse>> queryHandler;
 
-
 <PageTitle>Photo Libraries</PageTitle>
 
 <h3>Photo Libraries</h3>
@@ -68,6 +67,12 @@
                     <div class="card-body">
                         <h5 class="card-title">@library.Name</h5>
                         <p class="card-text">@library.Description</p>
+                        <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}")" target="_blank">
+                            <i class="bi bi-images"></i> View
+                        </NavLink>
+                        <button type="button" class="btn btn-danger" title="Delete Library">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
                     </div>
                 </div>
             </div>
