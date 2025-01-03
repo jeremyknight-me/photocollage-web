@@ -57,7 +57,11 @@ internal sealed class LibraryRefreshJob : IJob
 
     private async Task Refresh()
     {
-        var libraries = await this.context.Libraries.ToArrayAsync();
+        var libraries = await this.context.Libraries
+            .Include(l => l.ExcludedFolders)
+            .Include(l => l.Photos)
+            .AsSplitQuery()
+            .ToArrayAsync();
         if (libraries.Length == 0)
         {
             return;

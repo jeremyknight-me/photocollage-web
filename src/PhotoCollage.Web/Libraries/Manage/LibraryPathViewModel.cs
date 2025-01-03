@@ -1,6 +1,4 @@
-﻿using PhotoCollage.Core.Enums;
-
-namespace PhotoCollage.Web.Libraries.Manage;
+﻿namespace PhotoCollage.Web.Libraries.Manage;
 
 internal sealed class LibraryPathViewModel
 {
@@ -15,8 +13,6 @@ internal sealed class LibraryPathViewModel
         public required string Name { get; init; }
         public required string Path { get; init; }
         public required bool IsExcluded { get; init; }
-
-        public bool IsDisabled => this.IsExcluded;
     }
 
     internal sealed class LibraryPhoto
@@ -26,15 +22,7 @@ internal sealed class LibraryPathViewModel
         public required string Path { get; init; }
 
         public required long? PhotoId { get; init; }
-        public required PhotoAction? ProcessAction { get; init; }
-
-        public bool IsNew
-            => this.ProcessAction is not null
-            and PhotoAction.New;
-
-        public bool IsDisabled
-            => this.PhotoId is null
-            || this.ProcessAction is null
-            || this.ProcessAction == PhotoAction.Ignore;
+        public required bool IsNew { get; init; }
+        public required bool IsIgnored { get; init; }
     }
 }
