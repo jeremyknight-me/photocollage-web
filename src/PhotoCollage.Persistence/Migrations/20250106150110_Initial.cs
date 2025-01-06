@@ -65,7 +65,7 @@ public partial class Initial : Migration
                 LibraryId = table.Column<int>(type: "integer", nullable: false),
                 RelativePath = table.Column<string>(type: "text", nullable: false),
                 Extension = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
-                ProcessAction = table.Column<int>(type: "integer", nullable: false),
+                Status = table.Column<int>(type: "integer", nullable: false),
                 SizeBytes = table.Column<long>(type: "bigint", nullable: false),
                 DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                 DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)

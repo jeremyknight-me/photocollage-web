@@ -112,9 +112,6 @@ namespace PhotoCollage.Persistence.Migrations
                     b.Property<int>("LibraryId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProcessAction")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RelativePath")
                         .IsRequired()
                         .IsUnicode(true)
@@ -122,6 +119,9 @@ namespace PhotoCollage.Persistence.Migrations
 
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

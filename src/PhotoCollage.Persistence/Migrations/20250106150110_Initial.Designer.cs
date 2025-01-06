@@ -12,7 +12,7 @@ using PhotoCollage.Persistence;
 namespace PhotoCollage.Persistence.Migrations
 {
     [DbContext(typeof(PhotoCollageContext))]
-    [Migration("20250101231354_Initial")]
+    [Migration("20250106150110_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -115,9 +115,6 @@ namespace PhotoCollage.Persistence.Migrations
                     b.Property<int>("LibraryId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProcessAction")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RelativePath")
                         .IsRequired()
                         .IsUnicode(true)
@@ -125,6 +122,9 @@ namespace PhotoCollage.Persistence.Migrations
 
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
