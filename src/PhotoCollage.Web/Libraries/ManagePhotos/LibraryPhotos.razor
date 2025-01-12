@@ -1,0 +1,9 @@
+﻿@page "/libraries/{libraryId:int}/photos"
+@rendermode InteractiveServer
+
+@code {
+    private bool isLoaded = false;
+
+    [Parameter]
+    public int LibraryId { get; set; }
+}

@@ -2,10 +2,13 @@
 @rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using PhotoCollage.Persistence
+@using PhotoCollage.Web.Helpers.Commands
 @using PhotoCollage.Web.Helpers.Queries
 @using PhotoCollage.Web.Libraries.Create
+@using PhotoCollage.Web.Libraries.RefreshJob
 
-@inject IQueryHandler<GetLibrariesQuery, IReadOnlyCollection<LibraryResponse>> queryHandler;
+@inject IQueryHandler<GetLibrariesQuery, GetLibrariesResponse> queryHandler;
+@inject ICommandHandler<RefreshLibrariesCommand> refreshLibrariesHandler;
 
 <PageTitle>Photo Libraries</PageTitle>
 
@@ -67,8 +70,11 @@
                     <div class="card-body">
                         <h5 class="card-title">@library.Name</h5>
                         <p class="card-text">@library.Description</p>
-                        <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}")" target="_blank">
-                            <i class="bi bi-images"></i> View
+                        <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}/folders")">
+                                <i class="bi bi-folder-check"></i> Folders
+                        </NavLink>
+                        <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}/photos")">
+                            <i class="bi bi-images"></i> Photos
                         </NavLink>
                         <button type="button" class="btn btn-danger" title="Delete Library">
                             <i class="bi bi-trash-fill"></i>
@@ -82,7 +88,7 @@
 
 @code {
     private bool isLoaded = false;
-    private IReadOnlyCollection<LibraryResponse> libraries;
+    private IReadOnlyCollection<GetLibrariesResponse.LibraryResponse> libraries;
     private CreateLibrary createLibrary;
 
     protected override async Task OnInitializedAsync()
@@ -98,16 +104,16 @@
 
     private async Task OnLibraryCreated(int id)
     {
+        await this.refreshLibrariesHandler.Handle(new());
         await this.LoadLibraries();
     }
 
     private async Task LoadLibraries()
     {
-        GetLibrariesQuery query = new();
-        var result = await this.queryHandler.Handle(query);
+        var result = await this.queryHandler.Handle(new());
         if (result.IsSuccess)
         {
-            this.libraries = result.Value;
+            this.libraries = result.Value.Values;
         }
     }
 }

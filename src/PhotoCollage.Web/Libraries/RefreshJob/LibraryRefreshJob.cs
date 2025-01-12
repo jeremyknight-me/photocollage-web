@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using PhotoCollage.Core.Extensions;
 using PhotoCollage.Core.ValueObjects;
 using PhotoCollage.Persistence;
 using Quartz;
@@ -8,7 +9,7 @@ namespace PhotoCollage.Web.Libraries.RefreshJob;
 
 internal sealed class LibraryRefreshJob : IJob
 {
-    public static readonly JobKey Key = new(Name, "LibraryJobs");
+    public static readonly JobKey Key = new(Name, "LibraryJobsRepeating");
     public const string Name = nameof(LibraryRefreshJob);
 
     private readonly ILogger<LibraryRefreshJob> logger;
@@ -77,17 +78,9 @@ internal sealed class LibraryRefreshJob : IJob
 
     private PhotoFile[] GetPhotoFiles()
     {
-        var length = this.settings.PhotoRootDirectory.Length;
-        var directory = new DirectoryInfo(this.settings.PhotoRootDirectory);
-        return directory.EnumerateFiles("*.*", SearchOption.AllDirectories)
-            .Where(f =>
-                f.Extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase)
-                || f.Extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase)
-                || f.Extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
-            .Select(fi => PhotoFile.Create(
-                relativePath: fi.FullName[length..],
-                extension: fi.Extension,
-                sizeInBytes: fi.Length))
-            .ToArray();
+        DirectoryInfo directory = new(this.settings.PhotoRootDirectory);
+        return directory
+            .EnumerateFiles("*.*", SearchOption.AllDirectories)
+            .GetPhotoFiles(this.settings.PhotoRootDirectory.Length);
     }
 }

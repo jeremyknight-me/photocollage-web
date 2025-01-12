@@ -1,0 +1,27 @@
+﻿@page "/libraries/{libraryId:int}/folders"
+@rendermode InteractiveServer
+
+@using PhotoCollage.Web.Helpers.Queries
+
+@inject IQueryHandler<GetLibraryFoldersQuery, FoldersViewModel> foldersQueryHandler
+
+@code {
+    private bool isLoaded = false;
+
+    [Parameter]
+    public int LibraryId { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await this.foldersQueryHandler.Handle(new() { LibraryId = this.LibraryId });
+            if (result.IsSuccess)
+            {
+                var model = result.Value;
+                var bp = string.Empty;
+            }
+            
+        }
+    }
+}
