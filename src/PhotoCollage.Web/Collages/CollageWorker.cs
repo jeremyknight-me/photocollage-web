@@ -59,6 +59,7 @@ internal sealed class CollageWorker : BackgroundService
             return;
         }
 
+        // todo: get only photos with status set to sync
         long photoId;
         do
         {
