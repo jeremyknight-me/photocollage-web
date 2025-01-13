@@ -20,6 +20,9 @@
     disabled="@(!RendererInfo.IsInteractive)">
         <i class="bi bi-plus-lg"></i> Add Library
     </button>
+    <button type="button" @onclick="Refresh" class="btn btn-danger" disabled="@isRefreshing">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
 </div>
 
 <div class="collapse" id="collapseAddLibraryForm">
@@ -87,6 +90,7 @@
 
 @code {
     private bool isLoaded = false;
+    private bool isRefreshing = false;
     private GetLibrariesResponse.LibraryResponse[] libraries;
     private CreateLibrary createLibrary;
 
@@ -97,8 +101,21 @@
     }
 
     private void AddLibrary()
+        => this.createLibrary.Reset();
+
+    private async Task Refresh()
     {
-        this.createLibrary.Reset();
+        this.isRefreshing = true;
+        try
+        {
+            this.StateHasChanged();
+            await Task.Delay(1);
+            await this.LoadLibraries();
+        }
+        finally
+        {
+            this.isRefreshing = false;
+        }
     }
 
     private async Task OnLibraryCreated(int id)
