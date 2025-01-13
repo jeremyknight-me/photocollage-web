@@ -12,7 +12,7 @@ using PhotoCollage.Persistence;
 namespace PhotoCollage.Persistence.Migrations
 {
     [DbContext(typeof(PhotoCollageContext))]
-    [Migration("20250106150110_Initial")]
+    [Migration("20250113030335_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -34,21 +34,21 @@ namespace PhotoCollage.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("LibraryId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RelativePath")
                         .IsRequired()
                         .IsUnicode(true)
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "LibraryId");
 
                     b.HasIndex("LibraryId", "RelativePath")
                         .IsUnique()
@@ -100,6 +100,9 @@ namespace PhotoCollage.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
@@ -112,9 +115,6 @@ namespace PhotoCollage.Persistence.Migrations
                         .IsUnicode(true)
                         .HasColumnType("character varying(4)");
 
-                    b.Property<int>("LibraryId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RelativePath")
                         .IsRequired()
                         .IsUnicode(true)
@@ -126,7 +126,11 @@ namespace PhotoCollage.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id", "LibraryId");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Photo_Id");
 
                     b.HasIndex("LibraryId", "RelativePath")
                         .IsUnique()

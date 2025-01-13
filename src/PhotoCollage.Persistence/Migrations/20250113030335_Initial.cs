@@ -46,7 +46,7 @@ public partial class Initial : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_ExcludedFolder", x => x.Id);
+                table.PrimaryKey("PK_ExcludedFolder", x => new { x.Id, x.LibraryId });
                 table.ForeignKey(
                     name: "FK_ExcludedFolder_Library_LibraryId",
                     column: x => x.LibraryId,
@@ -72,7 +72,7 @@ public partial class Initial : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_Photo", x => x.Id);
+                table.PrimaryKey("PK_Photo", x => new { x.Id, x.LibraryId });
                 table.ForeignKey(
                     name: "FK_Photo_Library_LibraryId",
                     column: x => x.LibraryId,
@@ -93,6 +93,13 @@ public partial class Initial : Migration
             schema: "app",
             table: "Library",
             column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Photo_Id",
+            schema: "app",
+            table: "Photo",
+            column: "Id",
             unique: true);
 
         migrationBuilder.CreateIndex(

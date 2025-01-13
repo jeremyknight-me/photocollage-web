@@ -8,7 +8,7 @@ internal sealed class ExcludedFolderConfiguration : IEntityTypeConfiguration<Exc
     public void Configure(EntityTypeBuilder<ExcludedFolder> builder)
     {
         builder.ToTable(nameof(ExcludedFolder));
-        builder.HasKey(l => l.Id);
+        builder.HasKey(l => new { l.Id, l.LibraryId }); // creates "Identifying" relationship
         builder.Property(l => l.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.RelativePath).IsRequired();
