@@ -17,10 +17,10 @@ internal sealed class RefreshLibrariesCommandHandler : ICommandHandler<RefreshLi
         this.schedulerFactory = quartzSchedulerFactory;
     }
 
-    public async Task<Result> Handle(RefreshLibrariesCommand command)
+    public async Task<Result> Handle(RefreshLibrariesCommand request, CancellationToken cancellationToken)
     {
-        var scheduler = await this.schedulerFactory.GetScheduler();
-        await scheduler.TriggerJob(LibraryRefreshJob.Key);
+        var scheduler = await this.schedulerFactory.GetScheduler(cancellationToken);
+        await scheduler.TriggerJob(LibraryRefreshJob.Key, cancellationToken);
         return Result.Success();
     }
 }

@@ -6,7 +6,7 @@ using PhotoCollage.Web.Helpers.Commands;
 
 namespace PhotoCollage.Web.Libraries.Manage;
 
-internal sealed class GetLibraryQuery : ICommand
+internal sealed class GetLibraryQuery : ICommand<GetLibraryResponse>
 {
     public required LibraryId LibraryId { get; init; }
 }
@@ -20,13 +20,11 @@ internal sealed class GetLibraryQueryHandler : ICommandHandler<GetLibraryQuery, 
         this.contextFactory = photoCollageContextFactory;
     }
 
-    public async Task<Result<GetLibraryResponse>> Handle(GetLibraryQuery command)
+    public async Task<Result<GetLibraryResponse>> Handle(GetLibraryQuery request, CancellationToken cancellationToken)
     {
         using var context = this.contextFactory.CreateDbContext();
-
         var library = await context.Libraries
-            .FirstOrDefaultAsync(x => x.Id == command.LibraryId);
-
+            .FirstOrDefaultAsync(x => x.Id == request.LibraryId, cancellationToken);
         GetLibraryResponse response = new();
         return Result.Success(response);
     }

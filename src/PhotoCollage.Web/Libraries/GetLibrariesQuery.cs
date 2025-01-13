@@ -5,7 +5,7 @@ using PhotoCollage.Web.Helpers.Queries;
 
 namespace PhotoCollage.Web.Libraries;
 
-internal sealed class GetLibrariesQuery : IQuery
+internal sealed class GetLibrariesQuery : IQuery<GetLibrariesResponse>
 {
 }
 
@@ -18,7 +18,7 @@ internal sealed class GetLibrariesQueryHandler : IQueryHandler<GetLibrariesQuery
         this.contextFactory = photoCollageContextFactory;
     }
 
-    public async Task<Result<GetLibrariesResponse>> Handle(GetLibrariesQuery command)
+    public async Task<Result<GetLibrariesResponse>> Handle(GetLibrariesQuery request, CancellationToken cancellationToken)
     {
         using var context = this.contextFactory.CreateDbContext();
         var libraries = await context.Libraries
@@ -32,10 +32,10 @@ internal sealed class GetLibrariesQueryHandler : IQueryHandler<GetLibrariesQuery
                 CreatedOn = l.DateCreated
             })
             .OrderBy(l => l.Name)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         var response = new GetLibrariesResponse
         {
-            Values = libraries
+            Values = [.. libraries]
         };
         return Result.Success(response);
     }
@@ -43,7 +43,7 @@ internal sealed class GetLibrariesQueryHandler : IQueryHandler<GetLibrariesQuery
 
 internal sealed class GetLibrariesResponse
 {
-    public required IReadOnlyCollection<LibraryResponse> Values { get; init; }
+    public required LibraryResponse[] Values { get; init; }
 
     internal sealed class LibraryResponse
     {

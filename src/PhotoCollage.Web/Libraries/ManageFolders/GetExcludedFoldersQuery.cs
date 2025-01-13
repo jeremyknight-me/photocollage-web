@@ -7,7 +7,7 @@ using PhotoCollage.Web.Helpers.Queries;
 
 namespace PhotoCollage.Web.Libraries.ManageFolders;
 
-internal sealed class GetExcludedFoldersQuery : IQuery
+internal sealed class GetExcludedFoldersQuery : IQuery<GetExcludedFoldersQueryResponse>
 {
     public required LibraryId LibraryId { get; init; }
 }
@@ -21,14 +21,14 @@ internal sealed class GetExcludedFoldersQueryHandler : IQueryHandler<GetExcluded
         this.contextFactory = photoCollageContextFactory;
     }
 
-    public async Task<Result<GetExcludedFoldersQueryResponse>> Handle(GetExcludedFoldersQuery query)
+    public async Task<Result<GetExcludedFoldersQueryResponse>> Handle(GetExcludedFoldersQuery request, CancellationToken cancellationToken)
     {
         using var context = this.contextFactory.CreateDbContext();
         var folders = await context.Set<ExcludedFolder>()
-            .Where(ef => ef.LibraryId == query.LibraryId)
+            .Where(ef => ef.LibraryId == request.LibraryId)
             .OrderBy(ef => ef.RelativePath)
             .Select(ef => ef.RelativePath)
-            .ToArrayAsync();
+            .ToArrayAsync(cancellationToken);
         GetExcludedFoldersQueryResponse response = new() { ExcludedFolders = folders };
         return Result.Success(response);
     }

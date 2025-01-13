@@ -21,18 +21,18 @@ internal sealed class AddExcludedFolderCommandHandler : ICommandHandler<AddExclu
         this.contextFactory = photoCollageContextFactory;
     }
 
-    public async Task<Result> Handle(AddExcludedFolderCommand command)
+    public async Task<Result> Handle(AddExcludedFolderCommand request, CancellationToken cancellationToken)
     {
         using var context = this.contextFactory.CreateDbContext();
         var library = await context.Libraries
             .Include(x => x.ExcludedFolders)
-            .FirstOrDefaultAsync(x => x.Id == command.LibraryId);
+            .FirstOrDefaultAsync(x => x.Id == request.LibraryId);
         if (library is null)
         {
             return Result.NotFound();
         }
 
-        var result = library.AddExcludedFolder(command.Path);
+        var result = library.AddExcludedFolder(request.Path);
         if (result.IsSuccess)
         {
             _ = await context.SaveChangesAsync();

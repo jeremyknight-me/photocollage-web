@@ -1,31 +1,28 @@
 ﻿using Ardalis.Result;
+using MediatR;
 using PhotoCollage.Core.ValueObjects;
 using PhotoCollage.Web.Helpers.Queries;
 
 namespace PhotoCollage.Web.Libraries.ManageFolders;
 
-internal sealed class GetLibraryFoldersQuery : IQuery
+internal sealed class GetLibraryFoldersQuery : IQuery<FoldersViewModel>
 {
     public required LibraryId LibraryId { get; init; }
 }
 
 internal sealed class GetLibraryFoldersQueryHandler : IQueryHandler<GetLibraryFoldersQuery, FoldersViewModel>
 {
-    private readonly IQueryHandler<GetFileSystemFoldersQuery, FileSystemFoldersQueryResponse> fileSystemFoldersHandler;
-    private readonly IQueryHandler<GetExcludedFoldersQuery, GetExcludedFoldersQueryResponse> excludedFoldersHandler;
+    private readonly ISender sender;
 
-    public GetLibraryFoldersQueryHandler(
-        IQueryHandler<GetFileSystemFoldersQuery, FileSystemFoldersQueryResponse> fileSystemFoldersQueryHandler,
-        IQueryHandler<GetExcludedFoldersQuery, GetExcludedFoldersQueryResponse> excludedFoldersQueryHandler)
+    public GetLibraryFoldersQueryHandler(ISender sender)
     {
-        this.fileSystemFoldersHandler = fileSystemFoldersQueryHandler;
-        this.excludedFoldersHandler = excludedFoldersQueryHandler;
+        this.sender = sender;
     }
 
-    public async Task<Result<FoldersViewModel>> Handle(GetLibraryFoldersQuery query)
+    public async Task<Result<FoldersViewModel>> Handle(GetLibraryFoldersQuery request, CancellationToken cancellationToken)
     {
-        var fileSystemResult = await this.fileSystemFoldersHandler.Handle(new());
-        var excludedFoldersResult = await this.excludedFoldersHandler.Handle(new() { LibraryId = query.LibraryId });
+        var fileSystemResult = await this.sender.Send(new GetFileSystemFoldersQuery(), cancellationToken);
+        var excludedFoldersResult = await this.sender.Send(new GetExcludedFoldersQuery { LibraryId = request.LibraryId }, cancellationToken);
         List<FoldersViewModel.FolderViewModel> folders = [];
         foreach (var fileSystemFolder in fileSystemResult.Value.Folders)
         {

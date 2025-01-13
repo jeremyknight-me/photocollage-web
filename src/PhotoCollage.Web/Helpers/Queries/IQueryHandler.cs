@@ -1,15 +1,14 @@
 ﻿using Ardalis.Result;
+using MediatR;
 
 namespace PhotoCollage.Web.Helpers.Queries;
 
-internal interface IQueryHandler<TQuery>
-    where TQuery : IQuery
+internal interface IQueryHandler<TQuery> : IRequestHandler<TQuery, Result>
+    where TQuery : IQuery, IRequest<Result>
 {
-    Task<Result> Handle(TQuery query);
 }
 
-internal interface IQueryHandler<TQuery, TResponse>
-    where TQuery : IQuery
+internal interface IQueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, Result<TResponse>>
+    where TQuery : IQuery<TResponse>, IRequest<Result<TResponse>>
 {
-    Task<Result<TResponse>> Handle(TQuery query);
 }

@@ -5,7 +5,7 @@ using PhotoCollage.Web.Helpers.Queries;
 
 namespace PhotoCollage.Web.Libraries.ManageFolders;
 
-internal sealed class GetFileSystemFoldersQuery : IQuery
+internal sealed class GetFileSystemFoldersQuery : IQuery<FileSystemFoldersQueryResponse>
 {
 }
 
@@ -18,7 +18,7 @@ internal sealed class GetFileSystemFoldersQueryHandler : IQueryHandler<GetFileSy
         this.settings = optionsSnapshot.Value;
     }
 
-    public async Task<Result<FileSystemFoldersQueryResponse>> Handle(GetFileSystemFoldersQuery query)
+    public async Task<Result<FileSystemFoldersQueryResponse>> Handle(GetFileSystemFoldersQuery request, CancellationToken cancellationToken)
     {
         DirectoryInfo rootDirectory = new(this.settings.PhotoRootDirectory);
         var rootLength = this.settings.PhotoRootDirectory.Length;

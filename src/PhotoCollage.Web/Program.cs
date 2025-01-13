@@ -15,6 +15,11 @@ public class Program
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+        });
+
         services.AddSignalR(options =>
         {
             options.EnableDetailedErrors = builder.Environment.IsDevelopment();
@@ -33,7 +38,6 @@ public class Program
             .SetupOpenTelemetry()
             .SetupPersistence()
             .SetupQuartz()
-            .SetupLibrary()
             .SetupCollage();
 
         var app = builder.Build();

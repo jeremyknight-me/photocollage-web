@@ -1,15 +1,14 @@
 ﻿using Ardalis.Result;
+using MediatR;
 
 namespace PhotoCollage.Web.Helpers.Commands;
 
-internal interface ICommandHandler<TCommand>
-    where TCommand : ICommand
+internal interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result>
+    where TCommand : ICommand, IRequest<Result>
 {
-    Task<Result> Handle(TCommand command);
 }
 
-internal interface ICommandHandler<TCommand, TResponse>
-    where TCommand : ICommand
+internal interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, Result<TResponse>>
+    where TCommand : ICommand<TResponse>, IRequest<Result<TResponse>>
 {
-    Task<Result<TResponse>> Handle(TCommand command);
 }

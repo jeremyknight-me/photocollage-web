@@ -1,9 +1,10 @@
 ﻿@page "/libraries/{libraryId:int}"
-@using PhotoCollage.Web.Helpers.Queries
 @rendermode InteractiveServer
 @layout EmptyLayout
 
-@inject IQueryHandler<GetFolderQuery, GetFolderQueryResponse> folderQueryHandler
+@using MediatR
+
+@inject ISender sender
 
 <PageTitle>@Title</PageTitle>
 
@@ -83,7 +84,7 @@ else
 
     private async Task Back()
     {
-        if (this.IsRoot)
+        if (string.IsNullOrWhiteSpace(this.model?.Parent))
         {
             return;
         }
@@ -96,7 +97,7 @@ else
 
     private async Task LoadFolder(string path)
     {
-        this.model = await this.folderQueryHandler.Handle(new GetFolderQuery { Path = path });
+        this.model = await this.sender.Send(new GetFolderQuery { Path = path });
         this.isLoaded = true;
     }
 }

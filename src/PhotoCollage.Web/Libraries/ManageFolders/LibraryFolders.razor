@@ -1,12 +1,10 @@
 ﻿@page "/libraries/{libraryId:int}/folders"
 @rendermode InteractiveServer
 
+@using MediatR
 @using PhotoCollage.Web.Helpers.Commands
-@using PhotoCollage.Web.Helpers.Queries
 
-@inject IQueryHandler<GetLibraryFoldersQuery, FoldersViewModel> foldersQueryHandler
-@inject ICommandHandler<AddExcludedFolderCommand> addExcludedFolderHandler
-@inject ICommandHandler<RemoveExcludedFolderCommand> removeExcludedFolderHandler
+@inject ISender sender
 
 @if (!@RendererInfo.IsInteractive || !isLoaded || this.model is null)
 {
@@ -70,22 +68,17 @@ else
     private async Task ToggleFolder(FoldersViewModel.FolderViewModel folder)
     {
         this.isRunning = true;
-        if (folder.IsExcluded)
-        {
-            await this.removeExcludedFolderHandler.Handle(new() { LibraryId = this.LibraryId, Path = folder.Path });
-        }
-        else
-        {
-            await this.addExcludedFolderHandler.Handle(new() { LibraryId = this.LibraryId, Path = folder.Path });
-        }
-
+        ICommand command = folder.IsExcluded
+            ? new RemoveExcludedFolderCommand { LibraryId = this.LibraryId, Path = folder.Path }
+            : new AddExcludedFolderCommand { LibraryId = this.LibraryId, Path = folder.Path };
+        var result = await this.sender.Send(command);
         await this.LoadFolders();
         this.isRunning = false;
     }
 
     private async Task LoadFolders()
     {
-        var result = await this.foldersQueryHandler.Handle(new() { LibraryId = this.LibraryId });
+        var result = await this.sender.Send(new GetLibraryFoldersQuery { LibraryId = this.LibraryId });
         if (result.IsSuccess)
         {
             this.model = result.Value;

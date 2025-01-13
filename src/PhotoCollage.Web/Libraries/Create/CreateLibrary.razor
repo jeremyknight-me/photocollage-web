@@ -1,6 +1,6 @@
-﻿@using PhotoCollage.Web.Helpers.Commands
+﻿@using MediatR
 
-@inject ICommandHandler<CreateLibraryCommand, int> createLibraryCommand
+@inject ISender sender
 
 <EditForm Model="Model" OnValidSubmit="Submit" FormName="CreateLibrary">
     <DataAnnotationsValidator />
@@ -37,9 +37,13 @@
 
     private async Task Submit()
     {
-        var command = this.Model.ToCommand();
-        var result = await this.createLibraryCommand.Handle(command);
+        if (this.Model is null)
+        {
+            return;
+        }
 
+        var command = this.Model.ToCommand();
+        var result = await this.sender.Send(command);
         if (result.IsSuccess)
         {
             var id = result.Value;

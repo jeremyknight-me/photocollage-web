@@ -1,5 +1,12 @@
-﻿namespace PhotoCollage.Web.Helpers.Commands;
+﻿using Ardalis.Result;
+using MediatR;
 
-internal interface ICommand
+namespace PhotoCollage.Web.Helpers.Commands;
+
+internal interface ICommand : IRequest<Result>
+{
+}
+
+internal interface ICommand<TResponse> : IRequest<Result<TResponse>>
 {
 }

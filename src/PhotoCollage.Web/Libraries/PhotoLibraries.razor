@@ -1,14 +1,13 @@
 ﻿@page "/libraries"
 @rendermode InteractiveServer
+
+@using MediatR
 @using Microsoft.EntityFrameworkCore
 @using PhotoCollage.Persistence
-@using PhotoCollage.Web.Helpers.Commands
-@using PhotoCollage.Web.Helpers.Queries
 @using PhotoCollage.Web.Libraries.Create
 @using PhotoCollage.Web.Libraries.RefreshJob
 
-@inject IQueryHandler<GetLibrariesQuery, GetLibrariesResponse> queryHandler;
-@inject ICommandHandler<RefreshLibrariesCommand> refreshLibrariesHandler;
+@inject ISender sender
 
 <PageTitle>Photo Libraries</PageTitle>
 
@@ -55,7 +54,7 @@
             </div>
         }
     }
-    else if (this.libraries.Count == 0)
+    else if (this.libraries.Length == 0)
     {
         <div class="alert alert-light" role="alert">
             No libraries found. Please add one using the button above.
@@ -71,7 +70,7 @@
                         <h5 class="card-title">@library.Name</h5>
                         <p class="card-text">@library.Description</p>
                         <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}/folders")">
-                                <i class="bi bi-folder-check"></i> Folders
+                            <i class="bi bi-folder-check"></i> Folders
                         </NavLink>
                         <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}/photos")">
                             <i class="bi bi-images"></i> Photos
@@ -88,7 +87,7 @@
 
 @code {
     private bool isLoaded = false;
-    private IReadOnlyCollection<GetLibrariesResponse.LibraryResponse> libraries;
+    private GetLibrariesResponse.LibraryResponse[] libraries;
     private CreateLibrary createLibrary;
 
     protected override async Task OnInitializedAsync()
@@ -104,13 +103,13 @@
 
     private async Task OnLibraryCreated(int id)
     {
-        await this.refreshLibrariesHandler.Handle(new());
+        await this.sender.Send(new RefreshLibrariesCommand());
         await this.LoadLibraries();
     }
 
     private async Task LoadLibraries()
     {
-        var result = await this.queryHandler.Handle(new());
+        var result = await this.sender.Send(new GetLibrariesQuery());
         if (result.IsSuccess)
         {
             this.libraries = result.Value.Values;
