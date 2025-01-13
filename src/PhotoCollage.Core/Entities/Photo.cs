@@ -4,13 +4,6 @@ namespace PhotoCollage.Core.Entities;
 
 public sealed class Photo : EntityBase<PhotoId>
 {
-    public enum PhotoStatus
-    {
-        New = 0,
-        Sync = 1,
-        Ignore = 2
-    }
-
     private Photo()
     {
     }
@@ -23,10 +16,7 @@ public sealed class Photo : EntityBase<PhotoId>
     public long SizeBytes { get; private set; } = 0;
     public string Name => Path.GetFileName(this.RelativePath);
 
-    public bool IsIgnored => this.Status == PhotoStatus.Ignore;
-    public bool IsNew => this.Status == PhotoStatus.New;
-    public bool IsSynced => this.Status == PhotoStatus.Sync;
-
+    public void UpdateStatus(PhotoStatus status) => this.Status = status;
     public void UpdateSizeBytes(long size) => this.SizeBytes = size;
 
     public static Photo Create(string relativePath, string extension, long sizeBytes)
