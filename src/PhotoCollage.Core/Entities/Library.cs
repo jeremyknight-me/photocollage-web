@@ -61,6 +61,27 @@ public sealed class Library : EntityBase<LibraryId>
         return Result.Success();
     }
 
+    public Result RemoveExcludedFolder(string relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativePath))
+        {
+            return Result.Invalid(new ValidationError
+            {
+                Identifier = nameof(relativePath),
+                ErrorMessage = "Folder relative path cannot be null or empty."
+            });
+        }
+
+        relativePath = relativePath.TrimStart(['\\', '/']);
+        if (!this.excludedFolders.Any(f => f.RelativePath == relativePath))
+        {
+            return Result.NotFound();
+        }
+
+        _ = this.excludedFolders.RemoveAll(ef => ef.RelativePath == relativePath);
+        return Result.Success();
+    }
+
     internal Result AddPhoto(PhotoFile file)
     {
         if (string.IsNullOrWhiteSpace(file.RelativePath))

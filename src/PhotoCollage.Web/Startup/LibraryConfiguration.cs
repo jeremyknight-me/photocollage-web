@@ -12,8 +12,10 @@ internal static class LibraryConfiguration
     internal static WebApplicationBuilder SetupLibrary(this WebApplicationBuilder builder)
     {
         builder.Services
+            .AddScoped<ICommandHandler<AddExcludedFolderCommand>, AddExcludedFolderCommandHandler>()
             .AddScoped<ICommandHandler<CreateLibraryCommand, int>, CreateLibraryCommandHandler>()
             .AddScoped<ICommandHandler<RefreshLibrariesCommand>, RefreshLibrariesCommandHandler>()
+            .AddScoped<ICommandHandler<RemoveExcludedFolderCommand>, RemoveExcludedFolderCommandHandler>()
             .AddScoped<IQueryHandler<GetFileSystemFoldersQuery, FileSystemFoldersQueryResponse>, GetFileSystemFoldersQueryHandler>()
             .AddScoped<IQueryHandler<GetExcludedFoldersQuery, GetExcludedFoldersQueryResponse>, GetExcludedFoldersQueryHandler>()
             .AddScoped<IQueryHandler<GetLibraryFoldersQuery, FoldersViewModel>, GetLibraryFoldersQueryHandler>()

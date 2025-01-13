@@ -24,26 +24,52 @@ internal sealed class GetLibraryFoldersQueryHandler : IQueryHandler<GetLibraryFo
 
     public async Task<Result<FoldersViewModel>> Handle(GetLibraryFoldersQuery query)
     {
-        var fileSystemFoldersResult = await this.fileSystemFoldersHandler.Handle(new());
+        var fileSystemResult = await this.fileSystemFoldersHandler.Handle(new());
         var excludedFoldersResult = await this.excludedFoldersHandler.Handle(new() { LibraryId = query.LibraryId });
-
-        List<FoldersViewModel.FolderViewModel> folderViewModels = [];
-        foreach (var fileSystemFolder in fileSystemFoldersResult.Value.Folders)
+        List<FoldersViewModel.FolderViewModel> folders = [];
+        foreach (var fileSystemFolder in fileSystemResult.Value.Folders)
         {
-            var isExcluded = false; // todo: determine if in excluded path
-            FoldersViewModel.FolderViewModel vm = new(isExcluded)
-            {
-                Name = fileSystemFolder.Name,
-                Path = fileSystemFolder.Path,
-                FolderCount = fileSystemFolder.FolderCount,
-                PhotoCount = fileSystemFolder.PhotoCount,
-            };
-            folderViewModels.Add(vm);
+            var folder = this.CreateFolder(fileSystemFolder, excludedFoldersResult.Value.ExcludedFolders);
+            folders.Add(folder);
         }
 
         FoldersViewModel viewModel = new()
         {
+            Folders = [.. folders.OrderBy(x => x.Path)]
         };
         return Result.Success(viewModel);
+    }
+
+    private FoldersViewModel.FolderViewModel CreateFolder(FileSystemFoldersQueryResponse.FolderInfo folderInfo, string[] excludedFolders)
+    {
+        (var isExcluded, var isDisabled) = this.DetermineState(folderInfo.Path, excludedFolders);
+        return new()
+        {
+            Name = folderInfo.Name,
+            Path = folderInfo.Path,
+            FolderCount = folderInfo.FolderCount,
+            PhotoCount = folderInfo.PhotoCount,
+            IsDisabled = isDisabled,
+            IsExcluded = isExcluded
+        };
+    }
+
+    private (bool IsExcluded, bool IsDisabled) DetermineState(string path, string[] excludedFolders)
+    {
+        path = path.TrimStart(['\\', '/']);
+        foreach (var excluded in excludedFolders)
+        {
+            if (path == excluded)
+            {
+                return (true, false);
+            }
+
+            if (path.StartsWith(excluded))
+            {
+                return (true, true);
+            }
+        }
+
+        return (false, false);
     }
 }
