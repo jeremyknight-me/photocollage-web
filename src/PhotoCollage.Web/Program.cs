@@ -15,6 +15,11 @@ public class Program
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+        });
+
         services.AddSignalR(options =>
         {
             options.EnableDetailedErrors = builder.Environment.IsDevelopment();
@@ -58,7 +63,6 @@ public class Program
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
         app.MapHealthChecks("/healthz");
-        app.MapCustomEndpoints();
         app.UseCollage();
         app.ApplyMigrations();
 

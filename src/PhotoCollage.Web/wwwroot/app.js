@@ -4,6 +4,7 @@
         let frame = document.createElement('div');
         frame.id = `photo-${id}`;
         frame.classList.add('photo-frame');
+        frame.classList.add('invisible');
         if (settings.hasBorder) {
             frame.classList.add('bordered');
         }
@@ -20,6 +21,9 @@
         frame.style.transform = `rotate(${rotation}deg)`;
 
         let photo = document.createElement('img');
+        photo.onload = () => {
+            frame.classList.remove('invisible')
+        };
         photo.src = url;
         photo.style.maxHeight = `${settings.maximumSize}px`;
         photo.style.maxWidth = `${settings.maximumSize}px`;

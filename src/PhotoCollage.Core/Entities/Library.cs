@@ -13,13 +13,14 @@ public sealed class Library : EntityBase<LibraryId>
     }
 
     public required string Name { get; set; }
+    public string? Description { get; set; }
     public DateTimeOffset? LastRefreshed { get; private set; } = null;
 
     public IReadOnlyCollection<ExcludedFolder> ExcludedFolders => this.excludedFolders.ToList();
     public IReadOnlyCollection<Photo> Photos => this.photos.ToList();
 
-    public static Library Create(string name)
-        => new() { Name = name };
+    public static Library Create(string name, string? description = null)
+        => new() { Name = name, Description = description };
 
     public Result AddExcludedFolder(string relativePath)
     {
@@ -57,6 +58,27 @@ public sealed class Library : EntityBase<LibraryId>
         _ = this.MergeExcludedFolders();
         _ = this.RemoveExcludedPhotos();
         _ = this.RefreshPhotos(files);
+        return Result.Success();
+    }
+
+    public Result RemoveExcludedFolder(string relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativePath))
+        {
+            return Result.Invalid(new ValidationError
+            {
+                Identifier = nameof(relativePath),
+                ErrorMessage = "Folder relative path cannot be null or empty."
+            });
+        }
+
+        relativePath = relativePath.TrimStart(['\\', '/']);
+        if (!this.excludedFolders.Any(f => f.RelativePath == relativePath))
+        {
+            return Result.NotFound();
+        }
+
+        _ = this.excludedFolders.RemoveAll(ef => ef.RelativePath == relativePath);
         return Result.Success();
     }
 
@@ -101,7 +123,7 @@ public sealed class Library : EntityBase<LibraryId>
             return;
         }
 
-        _ = this.photos.RemoveAll(p => !files.Any(f => p.RelativePath == f.RelativePath));
+        _ = this.photos.RemoveAll(p => !files.Any(f => f.RelativePath == p.RelativePath));
     }
 
     private Result MergeExcludedFolders()
@@ -111,22 +133,10 @@ public sealed class Library : EntityBase<LibraryId>
             return Result.NoContent();
         }
 
-        var folderIdsToRemove = this.excludedFolders
-            .Where(folderToCheck =>
-                this.excludedFolders.Any(ef => folderToCheck.RelativePath.Length > ef.RelativePath.Length
-                    && folderToCheck.RelativePath.StartsWith(ef.RelativePath)
-                )
-            )
-            .Select(f => f.Id);
-
-        foreach (var folderId in folderIdsToRemove)
-        {
-            var folder = this.excludedFolders.FirstOrDefault(f => f.Id == folderId);
-            if (folder is not null)
-            {
-                _ = this.excludedFolders.Remove(folder);
-            }
-        }
+        _ = this.excludedFolders.RemoveAll(folderToCheck =>
+            this.excludedFolders.Any(ef => folderToCheck.RelativePath.Length > ef.RelativePath.Length
+                && folderToCheck.RelativePath.StartsWith(ef.RelativePath)
+            ));
 
         return Result.Success();
     }
@@ -158,8 +168,8 @@ public sealed class Library : EntityBase<LibraryId>
             return Result.NoContent();
         }
 
-        var folders = this.excludedFolders.Select(x => x.RelativePath).ToArray();
-        _ = this.photos.RemoveAll(p => folders.Any(f => p.RelativePath.StartsWith(f)));
+        _ = this.photos.RemoveAll(p =>
+            this.excludedFolders.Any(f => p.RelativePath.StartsWith(f.RelativePath)));
         return Result.Success();
     }
 }

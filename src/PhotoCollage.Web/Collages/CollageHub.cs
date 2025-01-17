@@ -5,8 +5,8 @@ namespace PhotoCollage.Web.Collages;
 
 public interface ICollageClient
 {
-    Task ReceivePhoto(Guid photoId);
-    Task ReceiveRemove(Guid photoId);
+    Task ReceivePhoto(long photoId);
+    Task ReceiveRemove(long photoId);
     Task ReceiveConnected(CollageSettings settings);
 }
 

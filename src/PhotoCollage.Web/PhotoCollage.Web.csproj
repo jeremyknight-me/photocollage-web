@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PhotoCollage.Persistence\PhotoCollage.Persistence.csproj" />
     <ProjectReference Include="..\PhotoCollage.Web.Client\PhotoCollage.Web.Client.csproj" />
+    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" />

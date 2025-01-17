@@ -8,6 +8,7 @@ internal static class CollageConfiguration
     internal static WebApplication UseCollage(this WebApplication app)
     {
         app.MapHub<CollageHub>(CollageLiterals.HubRelativeUrl);
+        app.MapCollageEndpoints();
         return app;
     }
 

@@ -1,0 +1,115 @@
+﻿@page "/libraries/{libraryId:int}/photos"
+@rendermode InteractiveServer
+
+@using MediatR
+@using PhotoCollage.Core
+@using PhotoCollage.Core.ValueObjects
+
+@inject NavigationManager navigationManager
+@inject ISender sender
+
+@if (!@RendererInfo.IsInteractive || !isLoaded || this.model is null)
+{
+    <LoadingIndicator />
+}
+else
+{
+    @foreach (var folder in this.model.Folders)
+    {
+        <details class="mb-4">
+            <summary class="alert alert-light">
+                <span class="badge text-bg-info">@folder.NewCount</span>
+                <span class="badge text-bg-success">@folder.SyncCount</span>
+                <span class="badge text-bg-secondary">@folder.IgnoredCount</span>
+                @folder.Path
+            </summary>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                @foreach (var photo in folder.Photos)
+                {
+                    var photoUri = this.navigationManager.ToAbsoluteUri($"/collage/photos/{photo.PhotoId.Value}");
+                    var photoStatusGroupName = $"photo-status-{photo.PhotoId.Value}";
+                    var photoStatusNewId = $"{photoStatusGroupName}-new";
+                    var photoStatusIgnoredId = $"{photoStatusGroupName}-ignore";
+                    var photoStatusSyncId = $"{photoStatusGroupName}-sync";
+
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-header">@photo.Name</div>
+                            <img src="@photoUri" class="card-img-top" alt="@photo.Name" />
+                            <div class="card-body">
+                                <p class="card-text fs-6">@photo.Path</p>
+                                <div class="btn-group" role="group" aria-label="Photo sync settings">
+                                    <input type="radio" class="btn-check" name="@photoStatusGroupName" id="@photoStatusNewId" 
+                                        autocomplete="off" checked="@photo.IsNew" disabled="@(photo.IsSaving || !photo.IsNew)" />
+                                    <label class="btn btn-outline-info" for="@photoStatusNewId">New</label>
+
+                                    <input type="radio" class="btn-check" name="@photoStatusGroupName" id="@photoStatusSyncId"
+                                        autocomplete="off" checked="@photo.IsSync" disabled="@photo.IsSaving"
+                                        @onchange="@(e => SetPhotoStatus(photo, PhotoStatus.Sync))" />
+                                    <label class="btn btn-outline-success" for="@photoStatusSyncId">Sync</label>
+
+                                    <input type="radio" class="btn-check" name="@photoStatusGroupName" id="@photoStatusIgnoredId"
+                                        autocomplete="off" checked="@photo.IsIgnored" disabled="@photo.IsSaving" 
+                                        @onchange="@(e => SetPhotoStatus(photo, PhotoStatus.Ignore))" />
+                                    <label class="btn btn-outline-secondary" for="@photoStatusIgnoredId">Ignore</label>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-body-secondary">Size: @photo.SizeBytes</small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </details>
+    }
+}
+
+@code {
+    private bool isLoaded = false;
+    private PhotosViewModel model;
+
+    [Parameter]
+    public int LibraryId { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await this.LoadPhotos();
+        }
+    }
+
+    private async Task LoadPhotos()
+    {
+        var result = await this.sender.Send(new GetLibraryPhotosQuery { LibraryId = this.LibraryId });
+        if (result.IsSuccess)
+        {
+            this.model = result.Value;
+            this.isLoaded = true;
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task SetPhotoStatus(PhotosViewModel.PhotoViewModel photo, PhotoStatus photoStatus)
+    {
+        photo.SetStatus(photoStatus);
+        photo.SavingStarted();
+        var command = new ChangePhotoStatusCommand
+        {
+            PhotoId = photo.PhotoId,
+            Status = photoStatus
+        };
+
+        try
+        {
+            this.StateHasChanged();
+            await Task.Delay(1);
+            await this.sender.Send(command);
+        }
+        finally
+        {
+            photo.SavingCompleted();
+        }
+    }
+}

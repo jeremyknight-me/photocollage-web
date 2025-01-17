@@ -1,6 +1,135 @@
 ﻿@page "/libraries"
+@rendermode InteractiveServer
+
+@using MediatR
+@using Microsoft.EntityFrameworkCore
+@using PhotoCollage.Persistence
+@using PhotoCollage.Web.Libraries.Create
+@using PhotoCollage.Web.Libraries.RefreshJob
+
+@inject ISender sender
+
+<PageTitle>Photo Libraries</PageTitle>
 
 <h3>Photo Libraries</h3>
 
+<div class="mt-4">
+    <button type="button" @onclick="AddLibrary" class="btn btn-primary"
+    data-bs-toggle="collapse" data-bs-target="#collapseAddLibraryForm"
+    aria-expanded="false" aria-controls="collapseAddLibraryForm"
+    disabled="@(!RendererInfo.IsInteractive)">
+        <i class="bi bi-plus-lg"></i> Add Library
+    </button>
+    <button type="button" @onclick="Refresh" class="btn btn-danger" disabled="@isRefreshing">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+</div>
+
+<div class="collapse" id="collapseAddLibraryForm">
+    <div class="card card-body mt-3">
+        <CreateLibrary @ref="createLibrary" OnLibraryCreated="OnLibraryCreated" />
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-1">
+    @if (!@RendererInfo.IsInteractive || !isLoaded || this.libraries is null)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                        </h5>
+                        <p class="card-text placeholder-glow">
+                            <span class="placeholder col-7"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-6"></span>
+                            <span class="placeholder col-8"></span>
+                        </p>
+                        <button type="button" class="btn btn-primary disabled placeholder col-6">
+                            <i class="bi bi-collection-fill"></i> View
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else if (this.libraries.Length == 0)
+    {
+        <div class="alert alert-light" role="alert">
+            No libraries found. Please add one using the button above.
+        </div>
+    }
+    else
+    {
+        foreach (var library in this.libraries)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@library.Name</h5>
+                        <p class="card-text">@library.Description</p>
+                        <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}/folders")">
+                            <i class="bi bi-folder-check"></i> Folders
+                        </NavLink>
+                        <NavLink class="btn btn-primary" href="@($"libraries/{library.Id}/photos")">
+                            <i class="bi bi-images"></i> Photos
+                        </NavLink>
+                        <button type="button" class="btn btn-danger" title="Delete Library">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
 @code {
+    private bool isLoaded = false;
+    private bool isRefreshing = false;
+    private GetLibrariesResponse.LibraryResponse[] libraries;
+    private CreateLibrary createLibrary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.LoadLibraries();
+        this.isLoaded = true;
+    }
+
+    private void AddLibrary()
+        => this.createLibrary.Reset();
+
+    private async Task Refresh()
+    {
+        this.isRefreshing = true;
+        try
+        {
+            this.StateHasChanged();
+            await Task.Delay(1);
+            await this.LoadLibraries();
+        }
+        finally
+        {
+            this.isRefreshing = false;
+        }
+    }
+
+    private async Task OnLibraryCreated(int id)
+    {
+        await this.sender.Send(new RefreshLibrariesCommand());
+        await this.LoadLibraries();
+    }
+
+    private async Task LoadLibraries()
+    {
+        var result = await this.sender.Send(new GetLibrariesQuery());
+        if (result.IsSuccess)
+        {
+            this.libraries = result.Value.Values;
+        }
+    }
 }

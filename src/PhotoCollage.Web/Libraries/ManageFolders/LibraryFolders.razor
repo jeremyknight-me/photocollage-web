@@ -1,0 +1,89 @@
+﻿@page "/libraries/{libraryId:int}/folders"
+@rendermode InteractiveServer
+
+@using MediatR
+@using PhotoCollage.Web.Helpers.Commands
+
+@inject ISender sender
+
+@if (!@RendererInfo.IsInteractive || !isLoaded || this.model is null)
+{
+    <LoadingIndicator />
+}
+else
+{
+    <div>Folders: @this.model.Folders.Length</div>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Included</th>
+                <th>Name</th>
+                <th>Path</th>
+                <th>Folders</th>
+                <th>Photos</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var folder in this.model.Folders)
+            {
+                <tr>
+                    <td class="text-center">
+                        <button type="button" class="bg-transparent border-0 p-0 m-0 lh-1" 
+                        @onclick="@(e => ToggleFolder(folder))"
+                        disabled="@folder.IsDisabled">
+                            <i class="bi @folder.IconClasses fs-2"></i>
+                        </button>
+                    </td>
+                    <td>@folder.Name</td>
+                    <td>@folder.Path</td>
+                    <td>@folder.FolderCount</td>
+                    <td>@folder.PhotoCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if(isRunning)
+{
+    <LoadingOverlay />
+}
+
+@code {
+    private bool isLoaded = false;
+    private FoldersViewModel? model;
+    private bool isRunning = false;
+
+    [Parameter]
+    public int LibraryId { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await this.LoadFolders();
+        }
+    }
+
+    private async Task ToggleFolder(FoldersViewModel.FolderViewModel folder)
+    {
+        this.isRunning = true;
+        ICommand command = folder.IsExcluded
+            ? new RemoveExcludedFolderCommand { LibraryId = this.LibraryId, Path = folder.Path }
+            : new AddExcludedFolderCommand { LibraryId = this.LibraryId, Path = folder.Path };
+        var result = await this.sender.Send(command);
+        await this.LoadFolders();
+        this.isRunning = false;
+    }
+
+    private async Task LoadFolders()
+    {
+        var result = await this.sender.Send(new GetLibraryFoldersQuery { LibraryId = this.LibraryId });
+        if (result.IsSuccess)
+        {
+            this.model = result.Value;
+            this.isLoaded = true;
+            this.StateHasChanged();
+        }
+    }
+}

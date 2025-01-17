@@ -8,13 +8,18 @@ internal sealed class PhotoConfiguration : IEntityTypeConfiguration<Photo>
     public void Configure(EntityTypeBuilder<Photo> builder)
     {
         builder.ToTable(nameof(Photo));
-        builder.HasKey(p => p.Id);
+        builder.HasKey(p => new { p.Id, p.LibraryId }); // creates "Identifying" relationship
         builder.Property(p => p.Id).ValueGeneratedOnAdd();
 
         builder.Property(p => p.RelativePath).IsRequired();
         builder.Property(p => p.Extension).IsRequired().HasMaxLength(4);
-        builder.Property(p => p.ProcessAction).IsRequired();
+        builder.Property(p => p.Status).IsRequired();
         builder.Property(p => p.SizeBytes).IsRequired();
+
+        builder
+            .HasIndex([nameof(Photo.Id)])
+            .IsUnique()
+            .HasDatabaseName($"IX_{nameof(Photo)}_Id");
 
         builder
             .HasIndex([nameof(Photo.LibraryId), nameof(Photo.RelativePath)])

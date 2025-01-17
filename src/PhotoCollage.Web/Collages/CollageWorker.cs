@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
 namespace PhotoCollage.Web.Collages;
@@ -7,19 +8,24 @@ internal sealed class CollageWorker : BackgroundService
 {
     private const int numberOfPhotos = 10;
 
-    private readonly ConcurrentQueue<Guid> photoIdQueue = [];
+    private readonly ConcurrentQueue<long> sentPhotosQueue = [];
+    private readonly ConcurrentQueue<long> currentQueue = [];
+    private readonly List<long> photoIds = [];
 
     private readonly ILogger<CollageWorker> logger;
     private readonly IHubContext<CollageHub, ICollageClient> hubContext;
+    private readonly ISender sender;
     private readonly CollageHubConnectionManager hubConnectionManager;
 
     public CollageWorker(
         ILogger<CollageWorker> workerLogger,
         IHubContext<CollageHub, ICollageClient> hubContext,
+        ISender sender,
         CollageHubConnectionManager collageHubConnectionManager)
     {
         this.logger = workerLogger;
         this.hubContext = hubContext;
+        this.sender = sender;
         this.hubConnectionManager = collageHubConnectionManager;
     }
 
@@ -34,7 +40,18 @@ internal sealed class CollageWorker : BackgroundService
                     this.logger.LogInformation("Collage worker ran at {time}", DateTimeOffset.Now);
                 }
 
-                await this.SendPhoto(stoppingToken);
+                if (!this.hubConnectionManager.HasClients)
+                {
+                    if (!this.sentPhotosQueue.IsEmpty)
+                    {
+                        this.sentPhotosQueue.Clear();
+                    }
+
+                    continue;
+                }
+
+                await this.GetPhotos();
+                await this.SendPhoto();
             }
             catch (Exception ex)
             {
@@ -47,27 +64,54 @@ internal sealed class CollageWorker : BackgroundService
         }
     }
 
-    private async Task SendPhoto(CancellationToken cancellationToken)
+    private async Task GetPhotos()
     {
-        if (!this.hubConnectionManager.HasClients)
+        if (this.photoIds.Count > 0)
         {
-            if (!this.photoIdQueue.IsEmpty)
-            {
-                this.photoIdQueue.Clear();
-            }
-
             return;
         }
 
-        var photoId = Guid.NewGuid();
-        this.photoIdQueue.Enqueue(photoId);
+        var result = await this.sender.Send(new GetLibraryPhotosQuery());
+        if (!result.IsSuccess)
+        {
+            return;
+        }
 
-        if (this.photoIdQueue.Count > numberOfPhotos
-            && this.photoIdQueue.TryDequeue(out var result))
+        this.photoIds.Clear();
+        this.photoIds.AddRange(result.Value);
+
+        this.ResetQueue();
+    }
+
+    private async Task SendPhoto()
+    {
+        if (this.currentQueue.IsEmpty)
+        {
+            this.ResetQueue();
+        }
+
+        if (!this.currentQueue.TryDequeue(out var photoId))
+        {
+            return;
+        }
+
+        this.sentPhotosQueue.Enqueue(photoId);
+
+        if (this.sentPhotosQueue.Count > numberOfPhotos
+            && this.sentPhotosQueue.TryDequeue(out var result))
         {
             await this.hubContext.Clients.Group(CollageHub.ConnectedGroupName).ReceiveRemove(result);
         }
 
         await this.hubContext.Clients.Group(CollageHub.ConnectedGroupName).ReceivePhoto(photoId);
+    }
+
+    private void ResetQueue()
+    {
+        this.currentQueue.Clear();
+        foreach (var id in this.photoIds.OrderBy(i => Random.Shared.Next()))
+        {
+            this.currentQueue.Enqueue(id);
+        }
     }
 }
