@@ -1,26 +1,48 @@
-﻿@page "/collage/run"
+﻿@page "/collage/run/{libraryId:int}"
 @rendermode InteractiveWebAssembly
 @layout EmptyLayout
-@using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
+
+@using Microsoft.AspNetCore.SignalR.Client
+
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 
 <HeadContent>
     <style>
         html, body {
-        background-color: #000;
-        color: #fff;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        width: 100%;
+            background-color: #000;
+            color: #fff;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        .hidden-link {
+            border-radius: 0 0 0.5rem 0.5rem;
+            left: 50%;
+            position: absolute;
+            transform: translateY(-120%) translateX(-50%);
+            transition: transform 325ms ease-in;
+            z-index: 1000;
+        }
+
+        .hidden-link:focus {
+            transform: translateY(0) translateX(-50%);
+        }
+
+        .hidden-link:hover {
+            text-decoration: underline;
         }
     </style>
 </HeadContent>
 
 <PageTitle>Collage Running...</PageTitle>
+
+<button type="button" class="btn btn-primary hidden-link" @onclick="Close" disabled="@closing">
+    <i class="bi bi-x"></i> Close
+</button>
 
 <div id="collage-wrapper">
     <LoadingIndicator />
@@ -30,6 +52,10 @@
     private HubConnection hubConnection;
     private CollageSettings settings;
     private int index = 0;
+    private bool closing = false;
+
+    [Parameter]
+    public int LibraryId { get; set; }
 
     protected override void OnInitialized()
     {
@@ -64,14 +90,26 @@
         }
     }
 
-    private void OnReceiveConnected(CollageSettings collageSettings)
+    private async Task Close()
+    {
+        this.closing = true;
+        await this.hubConnection.StopAsync();
+        this.NavigationManager.NavigateTo("/collage");
+    }
+
+    private async Task OnReceiveConnected(CollageSettings collageSettings)
     {
         this.settings = collageSettings;
+        CollageStartRequest request = new()
+            {
+                LibraryId = this.LibraryId
+            };
+        await this.hubConnection.SendAsync("StartCollage", request, default);
     }
 
     private async Task OnReceivePhoto(long photoId)
     {
-        var photoUri = this.NavigationManager.ToAbsoluteUri($"/collage/photos/{photoId}");
+        var photoUri = this.NavigationManager.ToAbsoluteUri($"/api/photos/{photoId}");
         await this.JS.AddPhoto(photoId, photoUri.AbsoluteUri, this.index++, this.settings);
     }
 

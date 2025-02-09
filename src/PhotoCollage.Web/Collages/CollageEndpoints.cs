@@ -10,7 +10,7 @@ internal static class CollageEndpoints
     internal static IEndpointRouteBuilder MapCollageEndpoints(this IEndpointRouteBuilder builder)
     {
         builder
-            .MapGet("/collage/photos/{photoId:long}", async Task<Microsoft.AspNetCore.Http.IResult> (
+            .MapGet("/api/photos/{photoId:long}", async Task<Microsoft.AspNetCore.Http.IResult> (
                 [FromRoute] long photoId,
                 [FromServices] ISender sender,
                 [FromServices] IOptionsSnapshot<ApplicationSettings> options

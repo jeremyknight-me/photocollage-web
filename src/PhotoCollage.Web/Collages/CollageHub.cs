@@ -33,4 +33,9 @@ internal sealed class CollageHub : Hub<ICollageClient>
         await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, ConnectedGroupName);
         this.connectionManager.RemoveClient(this.Context.ConnectionId);
     }
+
+    public Task StartCollage(CollageStartRequest request)
+    {
+        return Task.CompletedTask;
+    }
 }
