@@ -16,7 +16,6 @@ internal static class CollageConfiguration
     {
         var services = builder.Services;
         services.AddSingleton<CollageHubConnectionManager>();
-        services.AddHostedService<CollageWorker>();
         return builder;
     }
 }
