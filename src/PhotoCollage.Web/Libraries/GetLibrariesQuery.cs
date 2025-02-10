@@ -1,6 +1,7 @@
 ﻿using Ardalis.Result;
 using Microsoft.EntityFrameworkCore;
 using PhotoCollage.Persistence;
+using PhotoCollage.Web.Client.Libraries;
 using PhotoCollage.Web.Helpers.Queries;
 
 namespace PhotoCollage.Web.Libraries;
@@ -38,20 +39,5 @@ internal sealed class GetLibrariesQueryHandler : IQueryHandler<GetLibrariesQuery
             Values = [.. libraries]
         };
         return Result.Success(response);
-    }
-}
-
-internal sealed class GetLibrariesResponse
-{
-    public required LibraryResponse[] Values { get; init; }
-
-    internal sealed class LibraryResponse
-    {
-        public required int Id { get; init; }
-        public required string Name { get; init; }
-        public required string? Description { get; init; }
-        public required DateTimeOffset? RefreshedOn { get; init; }
-        public required DateTimeOffset CreatedOn { get; init; }
-        public required DateTimeOffset ModifiedOn { get; init; }
     }
 }

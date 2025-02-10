@@ -1,10 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using PhotoCollage.Web.Client.Collages;
+using Quartz;
 
 namespace PhotoCollage.Web.Collages;
 
-internal sealed class CollageWorker : BackgroundService
+internal sealed class CollageJob : IJob
 {
     private const int numberOfPhotos = 10;
 
@@ -12,46 +14,43 @@ internal sealed class CollageWorker : BackgroundService
     private readonly ConcurrentQueue<long> currentQueue = [];
     private readonly List<long> photoIds = [];
 
-    private readonly ILogger<CollageWorker> logger;
+    private readonly ILogger<CollageJob> logger;
     private readonly IHubContext<CollageHub, ICollageClient> hubContext;
     private readonly ISender sender;
     private readonly CollageHubConnectionManager hubConnectionManager;
 
-    public CollageWorker(
-        ILogger<CollageWorker> workerLogger,
+    public CollageJob(
+        ILogger<CollageJob> jobLogger,
         IHubContext<CollageHub, ICollageClient> hubContext,
         ISender sender,
         CollageHubConnectionManager collageHubConnectionManager)
     {
-        this.logger = workerLogger;
+        this.logger = jobLogger;
         this.hubContext = hubContext;
         this.sender = sender;
         this.hubConnectionManager = collageHubConnectionManager;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task Execute(IJobExecutionContext context)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        var jobData = context.MergedJobDataMap;
+        var libraryId = jobData.GetInt(nameof(CollageStartRequest.LibraryId));
+        if (libraryId == 0)
+        {
+            return;
+        }
+
+        if (this.logger.IsEnabled(LogLevel.Information))
+        {
+            this.logger.LogInformation("Collage worker ran at {time}", DateTimeOffset.Now);
+        }
+
+        while (this.hubConnectionManager.HasClients(libraryId))
         {
             try
             {
-                if (this.logger.IsEnabled(LogLevel.Information))
-                {
-                    this.logger.LogInformation("Collage worker ran at {time}", DateTimeOffset.Now);
-                }
-
-                if (!this.hubConnectionManager.HasClients)
-                {
-                    if (!this.sentPhotosQueue.IsEmpty)
-                    {
-                        this.sentPhotosQueue.Clear();
-                    }
-
-                    continue;
-                }
-
                 await this.GetPhotos();
-                await this.SendPhoto();
+                await this.SendPhoto(libraryId);
             }
             catch (Exception ex)
             {
@@ -59,7 +58,7 @@ internal sealed class CollageWorker : BackgroundService
             }
             finally
             {
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
         }
     }
@@ -83,7 +82,7 @@ internal sealed class CollageWorker : BackgroundService
         this.ResetQueue();
     }
 
-    private async Task SendPhoto()
+    private async Task SendPhoto(int libraryId)
     {
         if (this.currentQueue.IsEmpty)
         {
@@ -97,13 +96,14 @@ internal sealed class CollageWorker : BackgroundService
 
         this.sentPhotosQueue.Enqueue(photoId);
 
+        var group = $"library-{libraryId}";
         if (this.sentPhotosQueue.Count > numberOfPhotos
             && this.sentPhotosQueue.TryDequeue(out var result))
         {
-            await this.hubContext.Clients.Group(CollageHub.ConnectedGroupName).ReceiveRemove(result);
+            await this.hubContext.Clients.Group(group).ReceiveRemove(result);
         }
 
-        await this.hubContext.Clients.Group(CollageHub.ConnectedGroupName).ReceivePhoto(photoId);
+        await this.hubContext.Clients.Group(group).ReceivePhoto(photoId);
     }
 
     private void ResetQueue()

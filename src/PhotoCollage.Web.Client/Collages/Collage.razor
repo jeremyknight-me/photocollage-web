@@ -1,4 +1,10 @@
 ﻿@page "/collage"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@using PhotoCollage.Web.Client.Libraries
+
+@inject NavigationManager navigationManager
+@inject HttpClient httpClient
 
 <PageTitle>Collage</PageTitle>
 
@@ -7,9 +13,53 @@
 <div class="text-center">
     <p>Library selection coming soon.</p>
 
-    <NavLink class="btn btn-primary btn-lg" href="collage/run" target="_blank">
-        <i class="bi bi-play-fill"></i> Start
-    </NavLink>
+    @if (this.isLoaded && libraries is not null)
+    {
+        <EditForm Model="form" OnSubmit="Start">
+            <select class="form-select mb-2" @bind="this.form.LibraryId">
+                @foreach (var library in this.libraries)
+                {
+                    <option value="@library.Id">@library.Name</option>
+                }
+            </select>
 
-    <p>For best results, do not resize window once collage has started.</p>
+            <button type="submit" class="btn btn-primary btn-lg" disabled="@(!this.form.CanSubmit)">
+                <i class="bi bi-play-fill"></i> Start
+            </button>
+        </EditForm>
+    }
+
+    <div>
+        <p>For best results, do not resize window once collage has started.</p>
+        <p>Pressing 'Tab' in the collage screen will bring up a panel which will allow you to close and stop.</p>
+    </div>
+
 </div>
+
+@code {
+    private readonly CollageForm form = new();
+    private bool isLoaded = false;
+    private GetLibrariesResponse.LibraryResponse[] libraries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.GetLibraries();
+    }
+
+    private async Task Start()
+    {
+        if (!this.form.CanSubmit)
+        {
+            return;
+        }
+
+        this.navigationManager.NavigateTo($"/collage/run/{this.form.LibraryId}");
+    }
+
+    private async Task GetLibraries()
+    {
+        var result = await this.httpClient.GetFromJsonAsync<PhotoCollage.Web.Client.Libraries.GetLibrariesResponse>("/api/libraries");
+        this.libraries = result.Values;
+        this.isLoaded = true;
+    }
+}

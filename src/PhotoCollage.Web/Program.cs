@@ -31,7 +31,8 @@ public class Program
                 ["application/octet-stream"]);
         });
 
-        services.AddHealthChecks();
+        services
+            .AddHealthChecks();
 
         builder
             .SetupApplicationSettings()
@@ -63,7 +64,9 @@ public class Program
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
         app.MapHealthChecks("/healthz");
-        app.UseCollage();
+        app
+            .UseCustomEndpoints()
+            .UseCollage();
         app.ApplyMigrations();
 
         app.Run();   
